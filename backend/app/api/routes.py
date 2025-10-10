@@ -127,11 +127,12 @@ def save_meal_plan() -> Any:
     for entry in recipe_entries:
         recipe_id = entry.get("recipe_id")
         recipe_servings = entry.get("servings", servings)
-        recipe = Recipe.query.get(recipe_id)
+        recipe = db.session.get(Recipe, recipe_id)
         if not recipe:
             continue
-        link = MealPlanRecipe(recipe=recipe, servings=recipe_servings)
-        meal_plan.recipes.append(link)
+        meal_plan.recipes.append(
+            MealPlanRecipe(recipe_id=recipe.id, servings=recipe_servings)
+        )
 
     db.session.commit()
 

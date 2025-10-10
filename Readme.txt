@@ -34,6 +34,9 @@ source .venv/bin/activate
 pip install -r requirements.txt
 flask --app app:create_app db upgrade  # create database tables
 flask --app app:create_app run
+
+# Run automated checks
+pytest backend/tests
 ```
 
 ### Frontend Setup
@@ -58,7 +61,7 @@ The frontend proxies API requests to `http://localhost:5000`. Update `vite.confi
 
 ## Versioning
 
-- Backend version: `0.1.0`
+- Backend version: `0.1.1`
 - Frontend version: `0.1.0`
 
 Increment the relevant version before publishing future changes.

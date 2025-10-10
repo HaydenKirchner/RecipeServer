@@ -1,9 +1,9 @@
 """Database models."""
 from __future__ import annotations
 
-from datetime import datetime
+from datetime import UTC, datetime
 
-from sqlalchemy import Column, DateTime, ForeignKey, Integer, String, Text
+from sqlalchemy import DateTime, ForeignKey, Integer, String, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.types import JSON
 
@@ -19,7 +19,9 @@ class Recipe(db.Model):
     ingredients: Mapped[list[str]] = mapped_column(JSON, nullable=False, default=list)
     image_filename: Mapped[str | None] = mapped_column(String(255), nullable=True)
     servings: Mapped[int] = mapped_column(Integer, default=2)
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), default=lambda: datetime.now(UTC)
+    )
 
     meal_links: Mapped[list["MealPlanRecipe"]] = relationship("MealPlanRecipe", back_populates="recipe")
 
@@ -32,7 +34,9 @@ class MealPlan(db.Model):
     servings: Mapped[int] = mapped_column(Integer, default=2)
     notes: Mapped[str | None] = mapped_column(Text, nullable=True)
     is_active: Mapped[bool] = mapped_column(Integer, default=1)
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), default=lambda: datetime.now(UTC)
+    )
 
     recipes: Mapped[list["MealPlanRecipe"]] = relationship("MealPlanRecipe", back_populates="meal_plan", cascade="all, delete-orphan")
 

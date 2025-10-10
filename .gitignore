@@ -6,4 +6,5 @@ node_modules/
 backend/instance/
 backend/uploads/
 backend/images/
+frontend/dist/
 .DS_Store
