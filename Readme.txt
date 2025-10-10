@@ -1,193 +1,70 @@
-Project Overview
+# Recipe Planner
 
-This project is a web-based meal planning application that allows users to upload recipe PDFs, extract structured data (recipe name, ingredients, protein source, and an image preview), and organize meal plans. The system will feature a Flask-based backend API for data processing and a React-based frontend for user interaction.
+Recipe Planner is a full-stack meal-planning assistant that digitises PDF recipes, organises them into a searchable catalogue, and builds weekly shopping lists. The application pairs a Flask API for PDF ingestion with a Vite + React frontend inspired by the provided baseline design.
 
-Core Functionalities:
+## Features
 
-✔ PDF Upload & Extraction
-✔ Recipe Organization & Sorting
-✔ Meal Planning for 2 or 4 People
-✔ Shopping List Generation
-✔ Interactive UI for Browsing & Filtering Recipes
+- **PDF upload & parsing** – Extract recipe titles, ingredients, and hero images from PDF files using pdfplumber and pdf2image.
+- **Recipe catalogue** – Browse extracted recipes in an interactive grid with searching, sorting, and filtering controls.
+- **Meal planning** – Stage recipes for 2- or 4-person servings and persist the plan on the backend.
+- **Shopping list builder** – Auto-group consolidated ingredients by grocery category once a plan is saved.
+- **Dark UI** – Tailwind-powered styling influenced by the sample screenshot.
 
-Project Breakdown: Components & Features
-1️⃣ Backend (Flask API)
+## Project Structure
 
-The backend is responsible for handling file uploads, processing PDFs, extracting structured data, storing images, and serving API endpoints.
+```
+backend/   Flask application, database models, and PDF processing utilities.
+frontend/  React SPA built with Vite, Tailwind CSS, and lightweight shadcn-inspired components.
+```
 
-✅ 1.1 File Upload & Processing
+## Getting Started
 
-Users upload a recipe PDF via the frontend or an API request.
+### Prerequisites
 
-Flask validates the file (ensuring it's a PDF) before processing.
+- Python 3.11+
+- Node.js 18+
+- Poppler (required for pdf2image when extracting images)
 
-✅ 1.2 Text Extraction
+### Backend Setup
 
-Uses pdfplumber to extract text from the PDF.
+```bash
+cd backend
+python -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+flask --app app:create_app db upgrade  # create database tables
+flask --app app:create_app run
+```
 
-Filters out non-relevant content (e.g., instructions, phone numbers, promo texts).
+### Frontend Setup
 
-Uses regex-based heuristics and NLP techniques for:
+```bash
+cd frontend
+npm install
+npm run dev
+```
 
-Extracting the recipe name.
+The frontend proxies API requests to `http://localhost:5000`. Update `vite.config.ts` if your backend runs elsewhere.
 
-Cleaning ingredient lists (removing units like "¼ oz", unnecessary words).
+## API Overview
 
-Detecting the protein source intelligently.
+| Endpoint          | Method | Description                                     |
+| ----------------- | ------ | ----------------------------------------------- |
+| `/api/upload`     | POST   | Upload a PDF or JSON payload to save a recipe.  |
+| `/api/recipes`    | GET    | List stored recipes.                            |
+| `/api/images/<id>`| GET    | Serve extracted recipe images.                  |
+| `/api/meal-plan`  | POST   | Persist the active weekly meal plan.            |
+| `/api/shopping-list` | GET | Retrieve the categorised shopping list.         |
 
-✅ 1.3 Image Extraction
+## Versioning
 
-Uses pdf2image to extract the first page of the PDF as a recipe image.
+- Backend version: `0.1.0`
+- Frontend version: `0.1.0`
 
-Ensures image validation (correct size & format).
+Increment the relevant version before publishing future changes.
 
-Stores images in a dedicated folder.
+## Future Enhancements
 
-✅ 1.4 API Endpoints
-Endpoint	Method	Purpose
-/upload	POST	Accepts a PDF, extracts text & images, and returns structured JSON data.
-/recipes	GET	Returns a list of available recipes (parsed from uploaded PDFs).
-/images/<filename>	GET	Serves extracted recipe images.
-/meal-plan	POST	Allows users to save a meal plan for the week.
-/shopping-list	GET	Returns consolidated ingredients for the meal plan.
-2️⃣ Frontend (React App)
-
-The React UI allows users to upload recipes, browse extracted recipes, sort/filter them, plan meals, and generate a shopping list.
-
-✅ 2.1 Home Page
-
-Displays an upload button for PDF recipes.
-
-Shows a list of all uploaded recipes.
-
-✅ 2.2 Recipe Display
-
-Each recipe is displayed as a card with:
-
-Recipe name & image (from extracted PDF).
-
-Protein category (Beef, Fish, Vegetarian, etc.).
-
-Ingredient list (cleaned & formatted).
-
-Buttons to:
-
-View full details.
-
-Add to Meal Plan.
-
-Toggle between 2-person or 4-person serving.
-
-✅ 2.3 Meal Planning
-
-Users can add recipes to a weekly meal plan.
-
-Allows toggling between 2-person and 4-person meals.
-
-Provides shopping list generation based on planned meals.
-
-✅ 2.4 Shopping List
-
-Aggregates ingredients from all selected recipes.
-
-Groups items by category (Produce, Dairy, Meats, etc.).
-
-Formats the shopping list for export or printing.
-
-✅ 2.5 Filtering & Sorting
-
-Sort recipes by protein type (Beef, Chicken, Vegetarian, etc.).
-
-Search recipes by name or ingredients.
-
-Filter based on serving size (2-person or 4-person).
-
-3️⃣ Technical Stack
-Backend
-
-Flask (Python API)
-
-pdfplumber (Text extraction)
-
-pdf2image (Image extraction)
-
-Werkzeug (File handling)
-
-SQLite/PostgreSQL (Database for recipe storage)
-
-Flask-CORS (Cross-origin support for frontend requests)
-
-Frontend
-
-React (Vite-based setup)
-
-Axios (API requests)
-
-Tailwind CSS (UI styling)
-
-shadcn/ui (Component library)
-
-React Context API (Global state for meal planning)
-
-4️⃣ Development Roadmap
-Phase 1: Backend API
-
-✔ Setup Flask API & file upload handling.
-✔ Implement text & image extraction from PDFs.
-✔ Develop API endpoints for recipes, images, and meal planning.
-✔ Ensure CORS support for frontend communication.
-
-Phase 2: Frontend UI
-
-✔ Create React app structure.
-✔ Implement Recipe Cards with images & details.
-✔ Add sorting & filtering functionality.
-✔ Implement Meal Planning UI (drag & drop or checklist-style).
-✔ Generate shopping list from selected meals.
-
-Phase 3: Optimization & Testing
-
-✔ Improve ingredient parsing with better heuristics.
-✔ Enhance protein detection using NLP.
-✔ Implement persistent storage (database integration).
-✔ Optimize frontend performance (lazy loading, caching).
-✔ Thorough testing & bug fixes.
-
-5️⃣ Expected JSON Output (Recipe Data)
-{
-  "name": "TILAPIA WITH ALMOND-PARSLEY GREMOLATA",
-  "image": "/images/tilapia_recipe.jpg",
-  "protein": "Tilapia",
-  "ingredients": [
-    "Tilapia",
-    "Green Beans",
-    "Garlic Herb Butter",
-    "Chili Flakes",
-    "Sliced Almonds",
-    "Israeli Couscous"
-  ]
-}
-
-6️⃣ Expected JSON Output (Shopping List)
-{
-  "shopping_list": {
-    "Produce": ["Green Beans", "Garlic"],
-    "Dairy": ["Butter"],
-    "Protein": ["Tilapia"],
-    "Pantry": ["Israeli Couscous", "Chili Flakes", "Sliced Almonds"]
-  }
-}
-
-7️⃣ Future Features
-
-🔹 User Accounts: Allow users to save meal plans & shopping lists.
-🔹 Recipe Editing: Users can adjust ingredients, add notes, or customize servings.
-🔹 AI-powered Ingredient Suggestions: Recommend alternative ingredients based on dietary preferences.
-🔹 Mobile-Friendly UI: Ensure seamless experience on phones & tablets.
-🔹 Export Shopping List: Download shopping lists as PDF, CSV, or send to Walmart Grocery.
-
-Final Thoughts
-
-This application will allow users to digitize and organize their meal planning efficiently by extracting structured data from PDFs, filtering recipes, planning meals, and generating shopping lists.
-
-This plan provides detailed development steps and technical implementation to ensure smooth execution.
+- User authentication for saving multiple meal plans.
+- Drag-and-drop scheduling for individual weekdays.
+- CSV/PDF exports of generated shopping lists.
