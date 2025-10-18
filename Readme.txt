@@ -32,7 +32,7 @@ cd backend
 python -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
-flask --app app:create_app db upgrade  # create database tables
+flask --app app:create_app shell -c "from app.database import db; db.create_all()"  # create database tables
 flask --app app:create_app run
 
 # Run automated checks
@@ -49,6 +49,19 @@ npm run dev
 
 The frontend proxies API requests to `http://localhost:5000`. Update `vite.config.ts` if your backend runs elsewhere.
 
+### Docker Deployment
+
+Use Docker to run the full stack without installing Node.js or Python locally.
+
+```bash
+docker compose up --build
+
+# Initialise the SQLite database (first run only)
+docker compose exec backend flask --app app:create_app shell -c "from app.database import db; db.create_all()"
+```
+
+The frontend is served at [http://localhost:5173](http://localhost:5173) and proxies `/api/*` requests to the backend container. Named volumes keep database records, uploaded PDFs, and rendered images between container restarts.
+
 ## API Overview
 
 | Endpoint          | Method | Description                                     |
@@ -61,7 +74,7 @@ The frontend proxies API requests to `http://localhost:5000`. Update `vite.confi
 
 ## Versioning
 
-- Backend version: `0.1.1`
+- Backend version: `0.1.2`
 - Frontend version: `0.1.0`
 
 Increment the relevant version before publishing future changes.
