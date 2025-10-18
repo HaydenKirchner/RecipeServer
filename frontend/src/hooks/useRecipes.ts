@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import axios from "axios";
 import type { RecipeSummary } from "../types";
 
@@ -22,6 +22,11 @@ export function useRecipes() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [sortAscending, setSortAscending] = useState(false);
+  const [refreshToken, setRefreshToken] = useState(0);
+
+  const reload = useCallback(() => {
+    setRefreshToken(token => token + 1);
+  }, []);
 
   useEffect(() => {
     setLoading(true);
@@ -30,7 +35,7 @@ export function useRecipes() {
       .then(response => setRecipes(response.data))
       .catch(() => setError("Unable to load recipes"))
       .finally(() => setLoading(false));
-  }, []);
+  }, [refreshToken]);
 
   const filtered = useMemo(() => {
     const normalizedSearch = filters.search.toLowerCase();
@@ -59,6 +64,7 @@ export function useRecipes() {
     filters,
     setFilters,
     sortAscending,
-    setSortAscending
+    setSortAscending,
+    reload
   };
 }

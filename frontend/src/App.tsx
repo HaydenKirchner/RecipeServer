@@ -6,10 +6,14 @@ import { ShoppingList } from "./components/ShoppingList";
 import { MealPlanProvider } from "./contexts/MealPlanContext";
 import { useRecipes } from "./hooks/useRecipes";
 import type { ShoppingList as ShoppingListType } from "./types";
+import { AddRecipeDialog } from "./components/AddRecipeDialog";
+import { ImportRecipeDialog } from "./components/ImportRecipeDialog";
 
 function AppContent() {
-  const { recipes, filters, setFilters, loading, error, sortAscending, setSortAscending } = useRecipes();
+  const { recipes, filters, setFilters, loading, error, sortAscending, setSortAscending, reload } = useRecipes();
   const [shoppingList, setShoppingList] = useState<ShoppingListType>({});
+  const [showAddDialog, setShowAddDialog] = useState(false);
+  const [showImportDialog, setShowImportDialog] = useState(false);
 
   const proteins = useMemo(() => {
     const values = new Set(
@@ -28,10 +32,18 @@ function AppContent() {
           <p className="text-sm text-slate-400">Upload recipes, plan meals, and generate your shopping list.</p>
         </div>
         <div className="flex gap-3">
-          <button className="rounded-full bg-accent px-4 py-2 text-sm font-semibold text-slate-900 shadow-lg transition hover:bg-cyan-300" type="button">
+          <button
+            className="rounded-full bg-accent px-4 py-2 text-sm font-semibold text-slate-900 shadow-lg transition hover:bg-cyan-300"
+            type="button"
+            onClick={() => setShowAddDialog(true)}
+          >
             Add Recipe
           </button>
-          <button className="rounded-full border border-white/20 px-4 py-2 text-sm transition hover:border-accent" type="button">
+          <button
+            className="rounded-full border border-white/20 px-4 py-2 text-sm transition hover:border-accent"
+            type="button"
+            onClick={() => setShowImportDialog(true)}
+          >
             Import Recipe
           </button>
         </div>
@@ -66,6 +78,17 @@ function AppContent() {
           <ShoppingList list={shoppingList} />
         </div>
       </section>
+
+      <AddRecipeDialog
+        open={showAddDialog}
+        onClose={() => setShowAddDialog(false)}
+        onCreated={reload}
+      />
+      <ImportRecipeDialog
+        open={showImportDialog}
+        onClose={() => setShowImportDialog(false)}
+        onImported={reload}
+      />
     </div>
   );
 }
